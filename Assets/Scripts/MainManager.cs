@@ -13,10 +13,11 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text highScoreText;
     public GameObject GameOverText;
 
     private bool m_Started = false;
-    private int m_Points;
+    public int m_Points;
 
     private bool m_GameOver = false;
 
@@ -38,6 +39,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
     }
 
     private void Update()
@@ -57,14 +59,27 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            highScoreText.text = "Best Score : " + PlayerPrefs.GetString("HighScoreName") + " : " + PlayerPrefs.GetInt("HighScore");
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
+
+        if (!PlayerPrefs.HasKey("HighScore"))
+        {
+            PlayerPrefs.SetInt("HighScore", m_Points);
+            PlayerPrefs.SetString("HighScoreName", PlayerPrefs.GetString("PlayerName"));
+        }
+        else if (m_Points > PlayerPrefs.GetInt("HighScore"))
+        {
+            PlayerPrefs.SetInt("HighScore", m_Points);
+            PlayerPrefs.SetString("HighScoreName", PlayerPrefs.GetString("PlayerName"));
+        }
     }
 
-    void AddPoint(int point)
+    public void AddPoint(int point)
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
